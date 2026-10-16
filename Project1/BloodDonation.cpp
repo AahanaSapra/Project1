@@ -26,11 +26,21 @@ const Date& BloodDonation::date() const { return m_date; }
 std::string BloodDonation::validate() const {
     // TODO: implement field validation per spec
     // ID: exactly 6 digits
+    if (!isSixDigits(m_id)) {
+        return Result::BAD_ID;
+    }
     // Age: [21, 65]
+    if ((m_age < 21) || (m_age > 65)) {
+        return Result::BAD_AGE;
+    }
     // Weight: [101.0, 280.0]
+    if ((m_weight < 101.0) || (m_weight > 280.0)) {
+        return Result::BAD_WEIGHT;
+    }
     // Date: must be a valid calendar date
-    // Replace the placeholder below with real checks.
-    (void)isSixDigits; // silence unused warning until implemented
-    if (!DateUtil::isValid(m_date)) return Result::BAD_DATE; // placeholder partial
+    if (!DateUtil::isValid(m_date)) {
+        return Result::BAD_DATE;
+    }
+    
     return Result::OK;
 }

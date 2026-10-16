@@ -13,16 +13,19 @@ VacationAccount::VacationAccount(const std::string& donorId)
     // add() will verify that each donation belongs to this account.
 }
 
+// Destructor
 VacationAccount::~VacationAccount() {
     // TODO: delete owned BloodDonation pointers and array
 }
 
+// Copy Constructor (new object from old object)
 VacationAccount::VacationAccount(const VacationAccount& other)
     : m_id(other.m_id), m_items(nullptr), m_size(0), m_capacity(0), m_hours(0.0)
 {
     // TODO: deep copy other's donations and hours
 }
 
+// Assignment Operator (existing object from existing object)
 VacationAccount& VacationAccount::operator=(const VacationAccount& other) {
     if (this != &other) {
         // TODO: release current resources and deep copy from other
