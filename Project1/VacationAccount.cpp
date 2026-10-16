@@ -16,19 +16,85 @@ VacationAccount::VacationAccount(const std::string& donorId)
 // Destructor
 VacationAccount::~VacationAccount() {
     // TODO: delete owned BloodDonation pointers and array
+    // Check that m_items is a valid pointer
+    if (m_items != nullptr) {
+        // Delete individual BloodDonation ptrs
+        for (int i = 0; i < m_size; i++) {
+            delete m_items[i];
+        }
+
+        delete[] m_items; // Delete arr of ptrs
+
+        m_items = nullptr; // Avoid dangling ptr
+    }
 }
 
 // Copy Constructor (new object from old object)
 VacationAccount::VacationAccount(const VacationAccount& other)
-    : m_id(other.m_id), m_items(nullptr), m_size(0), m_capacity(0), m_hours(0.0)
-{
+    : m_id(other.m_id), m_items(nullptr), m_size(other.m_size),
+      m_capacity(other.m_capacity), m_hours(other.m_hours) {
     // TODO: deep copy other's donations and hours
+    
+    // Check that other's m_items is valid arr
+    if ((other.m_capacity > 0) && (other.m_items != nullptr)) {
+        m_items = new BloodDonation*[m_capacity]; // Allocate new arr of ptr
+
+        // Deep copy existing objects
+        for (int i = 0; i < m_size; i++) {
+            if (other.m_items[i] != nullptr) {
+                m_items[i] = new BloodDonation(*other.m_items[i]); // Call copy constructor to clone object
+            }
+            else {
+                m_items[i] = nullptr;
+            }
+        }
+
+        // Initialize remaining slots to nullptr
+        for (int i = m_size; i < m_capacity; i++) {
+            m_items[i] = nullptr;
+        }
+    }
 }
 
 // Assignment Operator (existing object from existing object)
 VacationAccount& VacationAccount::operator=(const VacationAccount& other) {
-    if (this != &other) {
+    if (this != &other) { // Check for aliasing
         // TODO: release current resources and deep copy from other
+
+        // Free current resources
+        if (m_items != nullptr) {
+            for (int i = 0; i < m_size; i++) {
+                delete m_items[i];
+            }
+            delete[] m_items;
+            m_items = nullptr;
+        }
+
+        // Copy over non-ptr attributes
+        m_id = other.m_id;
+        m_size = other.m_size;
+        m_capacity = other.m_capacity;
+        m_hours = other.m_hours;
+
+        // Allocate new memory and deep copy from other
+        if ((other.m_capacity > 0) && (other.m_items != nullptr)) {
+            m_items = new BloodDonation * [m_capacity]; // Allocate new arr of ptr
+
+            // Deep copy existing objects
+            for (int i = 0; i < m_size; i++) {
+                if (other.m_items[i] != nullptr) {
+                    m_items[i] = new BloodDonation(*other.m_items[i]); // Call copy constructor to clone object
+                }
+                else {
+                    m_items[i] = nullptr;
+                }
+            }
+
+            // Initialize remaining slots to nullptr
+            for (int i = m_size; i < m_capacity; i++) {
+                m_items[i] = nullptr;
+            }
+        }
     }
     return *this;
 }
