@@ -16,6 +16,40 @@ VacationAccount::VacationAccount(const std::string& donorId)
 // Destructor
 VacationAccount::~VacationAccount() {
     // TODO: delete owned BloodDonation pointers and array
+    clear();
+}
+
+// Copy Constructor (new object from old object)
+VacationAccount::VacationAccount(const VacationAccount& other)
+    : m_id(other.m_id), m_items(nullptr), m_size(other.m_size),
+      m_capacity(other.m_capacity), m_hours(other.m_hours) {
+    // TODO: deep copy other's donations and hours
+    
+    deepCopyFrom(other);
+}
+
+// Assignment Operator (existing object from existing object)
+VacationAccount& VacationAccount::operator=(const VacationAccount& other) {
+    if (this != &other) { // Check for aliasing
+        // TODO: release current resources and deep copy from other
+
+        clear();
+
+        deepCopyFrom(other);
+    }
+    return *this;
+}
+
+void VacationAccount::ensureCapacity(int need) {
+    // TODO: ensure m_items has room for at least 'need' pointers.
+    // m_size is the number of donations stored; m_capacity is the number
+    // of pointer slots allocated. Any growth strategy that provides at
+    // least 'need' slots is acceptable (simple +1 growth is acceptable).
+}
+
+void VacationAccount::clear() {
+    // TODO: delete owned donations, delete array, reset fields
+    
     // Check that m_items is a valid pointer
     if (m_items != nullptr) {
         // Delete individual BloodDonation ptrs
@@ -27,15 +61,26 @@ VacationAccount::~VacationAccount() {
 
         m_items = nullptr; // Avoid dangling ptr
     }
+
+    // Reset other attributes
+    m_id = "";
+    m_size = 0;
+    m_capacity = 0;
+    m_hours = 0.0;
 }
 
-// Copy Constructor (new object from old object)
-VacationAccount::VacationAccount(const VacationAccount& other)
-    : m_id(other.m_id), m_items(nullptr), m_size(other.m_size),
-      m_capacity(other.m_capacity), m_hours(other.m_hours) {
-    // TODO: deep copy other's donations and hours
-    
-    // Check that other's m_items is valid arr
+void VacationAccount::deepCopyFrom(const VacationAccount& other) {
+    // TODO: give this account its own independently allocated array and
+    // independently allocated copies of each BloodDonation. Do not merely
+    // copy the BloodDonation* pointer values.
+
+    // Copy over non-ptr attributes
+    m_id = other.m_id;
+    m_size = other.m_size;
+    m_capacity = other.m_capacity;
+    m_hours = other.m_hours;
+
+    // Allocate new memory and deep copy from other
     if ((other.m_capacity > 0) && (other.m_items != nullptr)) {
         m_items = new BloodDonation*[m_capacity]; // Allocate new arr of ptr
 
@@ -54,66 +99,9 @@ VacationAccount::VacationAccount(const VacationAccount& other)
             m_items[i] = nullptr;
         }
     }
-}
-
-// Assignment Operator (existing object from existing object)
-VacationAccount& VacationAccount::operator=(const VacationAccount& other) {
-    if (this != &other) { // Check for aliasing
-        // TODO: release current resources and deep copy from other
-
-        // Free current resources
-        if (m_items != nullptr) {
-            for (int i = 0; i < m_size; i++) {
-                delete m_items[i];
-            }
-            delete[] m_items;
-            m_items = nullptr;
-        }
-
-        // Copy over non-ptr attributes
-        m_id = other.m_id;
-        m_size = other.m_size;
-        m_capacity = other.m_capacity;
-        m_hours = other.m_hours;
-
-        // Allocate new memory and deep copy from other
-        if ((other.m_capacity > 0) && (other.m_items != nullptr)) {
-            m_items = new BloodDonation * [m_capacity]; // Allocate new arr of ptr
-
-            // Deep copy existing objects
-            for (int i = 0; i < m_size; i++) {
-                if (other.m_items[i] != nullptr) {
-                    m_items[i] = new BloodDonation(*other.m_items[i]); // Call copy constructor to clone object
-                }
-                else {
-                    m_items[i] = nullptr;
-                }
-            }
-
-            // Initialize remaining slots to nullptr
-            for (int i = m_size; i < m_capacity; i++) {
-                m_items[i] = nullptr;
-            }
-        }
+    else {
+        m_items = nullptr;
     }
-    return *this;
-}
-
-void VacationAccount::ensureCapacity(int need) {
-    // TODO: ensure m_items has room for at least 'need' pointers.
-    // m_size is the number of donations stored; m_capacity is the number
-    // of pointer slots allocated. Any growth strategy that provides at
-    // least 'need' slots is acceptable (simple +1 growth is acceptable).
-}
-
-void VacationAccount::clear() {
-    // TODO: delete owned donations, delete array, reset fields
-}
-
-void VacationAccount::deepCopyFrom(const VacationAccount& other) {
-    // TODO: give this account its own independently allocated array and
-    // independently allocated copies of each BloodDonation. Do not merely
-    // copy the BloodDonation* pointer values.
 }
 
 const std::string& VacationAccount::id() const { return m_id; }
