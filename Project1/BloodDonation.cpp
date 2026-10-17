@@ -25,6 +25,7 @@ const Date& BloodDonation::date() const { return m_date; }
 
 std::string BloodDonation::validate() const {
     // TODO: implement field validation per spec
+
     // ID: exactly 6 digits
     if (!isSixDigits(m_id)) {
         return Result::BAD_ID;

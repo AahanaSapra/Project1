@@ -1,5 +1,4 @@
 #include "VacationAccount.h"
-#include <iostream>
 #include <cassert>
 
 int main() {
@@ -32,8 +31,6 @@ int main() {
     assert(tooSoon.validate() == Result::OK);
     assert(acc.add(tooSoon) == Result::TOO_SOON);        // < 180 days since last accepted
     */
-
-    std::cout << "Start Assertions" << std::endl;
 
     VacationAccount acc1("123456"); // Test account
 
@@ -111,9 +108,6 @@ int main() {
 
     // Test 15: Deep Copy Isolation (Different Memory Address)
     assert(acc1.at(0) != acc2.at(0));
-
-
-    std::cout << "Assertions Passed!" << std::endl;
 
     return 0;
 }

@@ -136,6 +136,7 @@ const BloodDonation* VacationAccount::at(int index) const {
 
 std::string VacationAccount::add(const BloodDonation& donation) {
     // TODO: Implement in this exact order:
+
     // 1) Independent validation (donation.validate()). If not OK, return that code.
     if (donation.validate() != Result::OK) {
         return donation.validate();
