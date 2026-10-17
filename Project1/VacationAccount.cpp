@@ -21,8 +21,7 @@ VacationAccount::~VacationAccount() {
 
 // Copy Constructor (new object from old object)
 VacationAccount::VacationAccount(const VacationAccount& other)
-    : m_id(other.m_id), m_items(nullptr), m_size(other.m_size),
-      m_capacity(other.m_capacity), m_hours(other.m_hours) {
+    : m_id(""), m_items(nullptr), m_size(0), m_capacity(0), m_hours(0.0) { // default values to prevent redundancy
     // TODO: deep copy other's donations and hours
     
     deepCopyFrom(other);
@@ -45,6 +44,29 @@ void VacationAccount::ensureCapacity(int need) {
     // m_size is the number of donations stored; m_capacity is the number
     // of pointer slots allocated. Any growth strategy that provides at
     // least 'need' slots is acceptable (simple +1 growth is acceptable).
+
+    if (m_capacity >= need) { // Already have enough space
+        return;
+    }
+
+    // Exact Need Strategy: grow by exact need
+    int newCapacity = need;
+    BloodDonation** newItems = new BloodDonation * [newCapacity]; // Allocation arr of ptrs
+    // Transfer existing ptr to new arr
+    for (int i = 0; i < m_size; i++) {
+        newItems[i] = m_items[i];
+    }
+
+    // Initialize new ptr slots to nullptr
+    for (int i = m_size; i < newCapacity; i++) {
+        newItems[i] = nullptr;
+    }
+
+    delete[] m_items; // Delete outer arr but NOT individual ptr
+
+    // Update attributes
+    m_items = newItems;
+    m_capacity = newCapacity;
 }
 
 void VacationAccount::clear() {
@@ -116,14 +138,38 @@ const BloodDonation* VacationAccount::at(int index) const {
 std::string VacationAccount::add(const BloodDonation& donation) {
     // TODO: Implement in this exact order:
     // 1) Independent validation (donation.validate()). If not OK, return that code.
+    if (donation.validate() != Result::OK) {
+        return donation.validate();
+    }
     // 2) Account ID equality: if donation.id() != m_id, return Result::BAD_ID.
+    if (donation.id() != m_id) {
+        return Result::BAD_ID;
+    }
     // 3) SAME_DAY: if any accepted donation has the same calendar date,
     //    return Result::SAME_DAY.
+    for (int i = 0; i < m_size; i++) {
+        if (DateUtil::sameDay(m_items[i]->date(), donation.date())) {
+            return Result::SAME_DAY;
+        }
+    }
     // 4) TOO_SOON: compare with the most recently accepted donation
     //    (m_items[m_size - 1]). If daysBetween(...) < 180,
     //    return Result::TOO_SOON. Exactly 180 days is allowed.
     //    You may assume donations are submitted in chronological order.
+    if (m_size > 0) {
+        BloodDonation* lastDonation = m_items[m_size - 1];
+        if (DateUtil::daysBetween(lastDonation->date(), donation.date()) < MIN_INTERVAL_DAYS) {
+            return Result::TOO_SOON;
+        }
+    }
     // 5) On success: store an independent copy, append it to the array,
     //    increment hours by +4.0, and return Result::OK.
-    return Result::OK; // placeholder
+
+    // Update arr and state vars
+    ensureCapacity(m_size + 1);
+    m_items[m_size] = new BloodDonation(donation);
+    m_size++;
+    m_hours += HOURS_PER_DONATION;
+
+    return Result::OK; 
 }
