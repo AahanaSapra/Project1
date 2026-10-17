@@ -85,7 +85,6 @@ void VacationAccount::clear() {
     }
 
     // Reset other attributes
-    m_id = "";
     m_size = 0;
     m_capacity = 0;
     m_hours = 0.0;
